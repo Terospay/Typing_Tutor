@@ -14,8 +14,8 @@ def download(list_text):
 
 
 def finish(symbol_per_second, Error):
-    S = f"Количество ошибок: {Error}" + '\n' + f'Символов в секунду: {symbol_per_second}'
-    answer = askyesno(title='Сохранить статистику?', message=S)
+    S = f"Fails: {Error}" + '\n' + f'Symbol per second: {symbol_per_second}'
+    answer = askyesno(title='Save statistic?', message=S)
     if (answer):
         f = open('statistics.txt', 'a')
         now = datetime.datetime.now()
