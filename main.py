@@ -3,17 +3,17 @@ from tkinter.messagebox import *
 import time
 import datetime
 
-root = Tk()
+root = Tk()  # Create root
 
 
-def download(list_text):
+def download(list_text):  # Download file
     f = open("text.txt")
     for line in f:
         list_text.append(line)
     f.close()
 
 
-def finish(symbol_per_second, Error):
+def finish(symbol_per_second, Error):  # End input processing and record stats
     S = f"Fails: {Error}" + '\n' + f'Symbol per second: {symbol_per_second}'
     answer = askyesno(title='Save statistic?', message=S)
     if (answer):
@@ -26,7 +26,7 @@ def finish(symbol_per_second, Error):
         root.destroy()
 
 
-def inp(event):
+def inp(event):  # Insert symbol
     global current_line, current_pos, Error, start_input, number_of_lines, time_start, numb_symb
     if event.char != '':
         input_symbol = event.char
@@ -58,6 +58,7 @@ def inp(event):
                 finish(symb_per_second, Error)
         else:
             Error += 1
+            Input.config(state=DISABLED)
 
 
 list_text = []
@@ -69,14 +70,15 @@ time_start = 0
 for i in list_text:
     numb_symb += len(i) - 1
 start_input = False
-root.update_idletasks()
+#
+#
+root.update_idletasks()  # Setting widget geometry
 root.geometry()
 s = root.geometry()
 s = s.split('+')
 s = s[0].split('x')
 width_root = int(s[0])
 height_root = int(s[1])
-
 w = root.winfo_screenwidth()
 h = root.winfo_screenheight()
 w = w // 2
@@ -84,19 +86,17 @@ h = h // 2
 w = w - width_root // 2
 h = h - height_root // 2
 root.geometry('800x650+{}+{}'.format(w - 400, h - 400))
+#
+#
 f_task = LabelFrame(text="Task:")
 Task = Label(f_task, text=text, font="Arial 20")
 Input = Text(font="Arial 20", wrap=WORD, fg='red')
 current_line = 0
 current_pos = 0
 Error = 0
-Input.insert(END, '|')
-Input.config(state=DISABLED)
 Input.bind('<Key>', inp)
 f_task.pack(fill=X, side=TOP)
 f_task.pack()
 Task.pack()
 Input.pack(fill=X, side=TOP)
-
-
 root.mainloop()
