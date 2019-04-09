@@ -15,6 +15,8 @@ def download(list_text):  # Download file
 
 def finish(symbol_per_second, Error):  # End input processing and record stats
     S = f"Fails: {Error}" + '\n' + f'Symbol per second: {symbol_per_second}'
+    Symbol_per_second['text'] = \
+        "Symbol per second: {}".format(symbol_per_second)
     answer = askyesno(title='Save statistic?', message=S)
     if (answer):
         f = open('statistics.txt', 'a')
@@ -23,23 +25,26 @@ def finish(symbol_per_second, Error):  # End input processing and record stats
         info = str(now) + ':\n' + S + '\n\n'
         f.write(info)
         f.close()
-        root.destroy()
+    root.destroy()
 
 
 def inp(event):  # Insert symbol
-    global current_line, current_pos, Error, start_input, number_of_lines, time_start, numb_symb
+    global current_line, current_pos, Error, start_input, \
+        number_of_lines, time_start, numb_symb, now_symb
     if event.char != '':
         input_symbol = event.char
         if input_symbol == list_text[current_line][current_pos]:
             if not start_input:
                 time_start = time.time()
                 start_input = True
+            now_symb += 1
             Input.config(state=NORMAL)
             Input.delete("%s-2c" % END)
             Input.insert(END, input_symbol)
             Input.insert(END, '|')
             Input.config(state=DISABLED)
-            if current_pos == len(list_text[current_line]) - 2 and current_line + 1 != len(list_text) \
+            if current_pos == len(list_text[current_line]) - 2 \
+                    and current_line + 1 != len(list_text) \
                     or current_line + 1 == len(list_text) and \
                     current_pos == len(list_text[current_line]) - 1:
                 current_pos = 0
@@ -56,9 +61,15 @@ def inp(event):  # Insert symbol
                 allTime = time.time() - time_start
                 symb_per_second = round(numb_symb / allTime, 2)
                 finish(symb_per_second, Error)
+                return
         else:
             Error += 1
             Input.config(state=DISABLED)
+        Failse['text'] = "Fails: {}".format(Error)
+        now_time = time.time() - time_start
+        if now_symb > 2:
+            Symbol_per_second['text'] = \
+                "Symbol per second: {}".format(round(now_symb / now_time, 2))
 
 
 list_text = []
@@ -67,6 +78,7 @@ number_of_lines = len(list_text)
 text = ''.join(list_text)
 numb_symb = 0
 time_start = 0
+now_symb = 0
 for i in list_text:
     numb_symb += len(i) - 1
 start_input = False
@@ -88,15 +100,23 @@ h = h - height_root // 2
 root.geometry('800x650+{}+{}'.format(w - 400, h - 400))
 #
 #
-f_task = LabelFrame(text="Task:")
-Task = Label(f_task, text=text, font="Arial 20")
-Input = Text(font="Arial 20", wrap=WORD, fg='red')
 current_line = 0
 current_pos = 0
 Error = 0
+f_task = LabelFrame(text="Task:")
+Task = Label(f_task, text=text, font="Arial 20")
+Input = Text(font="Arial 20", wrap=WORD, fg='green')
+f_statistic = LabelFrame(text="Statistic:")
+Failse = Label(f_statistic, text="Fails: 0", font="Courier 15", fg='red')
+Symbol_per_second = Label(f_statistic, text="Symbol per second: 0",
+                          font="Courier 15", fg='red')
 Input.bind('<Key>', inp)
 f_task.pack(fill=X, side=TOP)
-f_task.pack()
-Task.pack()
+f_statistic.pack(fill=X, side=BOTTOM)
 Input.pack(fill=X, side=TOP)
+Task.pack()
+Failse.pack(fill=X, side=TOP)
+Symbol_per_second.pack(fill=X, side=TOP)
+#
+#
 root.mainloop()
